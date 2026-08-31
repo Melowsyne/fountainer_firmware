@@ -1,0 +1,15 @@
+{
+  "_comment": "Default network provisioning. Copy to network.json (git-ignored) and fill in real values. Applied on first boot / after an NVS schema change; changeable at runtime via dp_write + Network_Save.",
+
+  "Network_DHCP": true,
+
+  "Network_IP_Address": "192.168.1.51",
+  "Network_Subnetmask": "255.255.255.0",
+  "Network_Gateway": "192.168.1.1",
+
+  "Network_Server": "server1.lab.melowsyne.com",
+  "Network_Server_Port": 8443,
+
+  "Network_SSID": "myWLAN",
+  "Network_Password": "secret"
+}

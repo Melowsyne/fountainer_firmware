@@ -1,0 +1,65 @@
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_ESPTOOLPY_FLASHSIZE="16MB"
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_APP_UPDATE_RECOVERY=n
+# Allow OTA download over plaintext HTTP (testbed; in production wss/https + CA).
+# Without this flag esp_https_ota_begin() rejects http URLs with ESP_ERR_INVALID_ARG.
+CONFIG_ESP_HTTPS_OTA_ALLOW_HTTP=y
+# FreeRTOS runtime statistics for System_Utilization (CPU load per interval).
+CONFIG_FREERTOS_USE_TRACE_FACILITY=y
+CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y
+# Do NOT advertise WPA3/SAE on the client side (no RSNXE element in the assoc request).
+# Some WPA2/WPA3 mixed-mode routers otherwise permanently reject the association
+# with status 30 ("comeback") -> ~3 min, while dual-band devices connect.
+# (Sources: EMS-ESP32 #1073 FRITZ!Box, WLED #5568.) Pure WPA2-PSK login.
+CONFIG_ESP_WIFI_ENABLE_WPA3_SAE=n
+# --- Signed OTA updates: "Signed App Verification without Secure Boot" ---
+# Pure SOFTWARE check of the RSA-3072 signature block during OTA (esp_ota/
+# esp_https_ota verify against the public key of the RUNNING app).
+# NO eFuses are burned (no Secure Boot, no flash encryption)
+# -> fully reversible. The initial signed image is delivered via USB.
+# Key: testbed PKI ../DO_NOT_COMMIT/CA/ota_signing/ota_signing_key.pem (dummy).
+CONFIG_SECURE_SIGNED_APPS_NO_SECURE_BOOT=y
+CONFIG_SECURE_SIGNED_APPS_RSA_SCHEME=y
+CONFIG_SECURE_SIGNED_ON_UPDATE_NO_SECURE_BOOT=y
+CONFIG_SECURE_BOOT_BUILD_SIGNED_BINARIES=y
+CONFIG_SECURE_BOOT_SIGNING_KEY="../DO_NOT_COMMIT/CA/ota_signing/ota_signing_key.pem"
+# --- Power Management: DFS (dynamic frequency scaling) 80..160 MHz ----------
+# power_mgmt.c holds a CPU_FREQ_MAX lock (160 MHz) in HIGH mode and releases
+# it after 5 min of inactivity -> DFS lowers to 80 MHz; plus modem sleep.
+# DELIBERATELY WITHOUT tickless idle/light sleep (USB-Serial/JTAG console + WS latency).
+CONFIG_PM_ENABLE=y
+# --- TWDT as hard fallback level BELOW the app watchdog (Watchdog_v1.md) --
+# 60 s: well above the longest task period (5 s) + cycle budgets and
+# the network timeouts (WS send 10 s, HTTP 30 s). PANIC=y: a busy/block hang
+# of a subscribed task (task_manager tasks, app_wd task, main_init) ends
+# in a panic -> reboot with Reset_Reason=6 instead of an inconsequential warning.
+CONFIG_ESP_TASK_WDT_TIMEOUT_S=60
+CONFIG_ESP_TASK_WDT_PANIC=y
+# --- TLS session tickets (Link_Robustness_v1 §B3) ---------------------------
+# Reconnects use session resumption instead of a full mTLS handshake —
+# on lossy links the decisive airtime/latency gain during
+# flapping reconnects. Python ssl on the server side issues tickets automatically.
+CONFIG_ESP_TLS_CLIENT_SESSION_TICKETS=y
+# --- Local WSS server (firmware_server.md, implementation plan AP3) ---------
+# HTTPS server + WebSocket support for local maintenance access
+# (wss://<device-ip>:4443/ws, mTLS via cacert_pem -> VERIFY_REQUIRED).
+CONFIG_ESP_HTTPS_SERVER_ENABLE=y
+CONFIG_HTTPD_WS_SUPPORT=y
+# httpd needs max_open_sockets + 3 reserved fds; besides that cloud WS client,
+# OTA download and DNS. Default 10 was too tight.
+CONFIG_LWIP_MAX_SOCKETS=16
+# M1 RESULT (2026-08-14): 1 TLS server session costs ~36 KB; the 2nd session
+# failed at the handshake peak (free: only ~23 KB left). First lever pulled:
+# DYNAMIC_BUFFER — mbedTLS allocates RX/TX buffers per record and frees them
+# afterwards; idle sessions thus hold almost no buffer RAM. GLOBAL
+# (also affects the cloud connection) -> cloud regression test after activation
+# is mandatory (part of the M1 repeat).
+CONFIG_MBEDTLS_DYNAMIC_BUFFER=y
+# FURTHER MEASUREMENT LEVERS (deliberately NOT set — only if M1/M2 require it):
+#   CONFIG_MBEDTLS_SSL_IN_CONTENT_LEN=4096   (~12 KB less RAM per TLS
+#       session; danger: incoming TLS records >4 KB — OTA download!)
+#   CONFIG_ESP_TLS_SERVER_SESSION_TICKETS=y  (cheaper re-handshakes)
+#   thin out MBEDTLS_ECP_DP_* curves          (flash/RAM)

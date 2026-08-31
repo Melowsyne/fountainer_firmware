@@ -1,0 +1,6 @@
+{
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/.pio/build/esp32s3/compile_commands.json",
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/.pio/build/esp32s3"
+    ]
+}

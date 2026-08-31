@@ -1,0 +1,19 @@
+# Name,     Type, SubType,  Offset,   Size,     Flags
+nvs,        data, nvs,      0x9000,   0x6000,
+otadata,    data, ota,      0xf000,   0x2000,
+phy_init,   data, phy,      0x11000,  0x1000,
+ota_0,      app,  ota_0,    0x20000,  0x780000,
+ota_1,      app,  ota_1,    0x7a0000, 0x780000,
+# Persistent log store (Logging_v1.md flash tier): 2 slots x 64 K holding the
+# previous boot's WARN/ERROR + boot/watchdog-diagnosis records. Placed BEHIND
+# the (unchanged) OTA slots -> extending the table is USB-only but needs no
+# full erase (NVS keeps its content); the firmware detects the partition at
+# runtime and stays inert without it.
+logstore,   data, 0x40,     0xf20000, 0x20000,
+# Factory NVS (series production, serienfertigung.md §8): device-individual
+# production data (serial, device_id, certificate/key, HMAC key, server,
+# batch), written by the production station (factory.bin @0xf40000).
+# Same trick as logstore: BEHIND the OTA slots -> USB-only change,
+# NVS/logstore/app slots stay byte-identical; without this partition the
+# firmware falls back to the compiled-in identity (factory_config).
+factory,    data, nvs,      0xf40000, 0x10000,

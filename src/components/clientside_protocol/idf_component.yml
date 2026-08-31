@@ -1,0 +1,6 @@
+## Managed dependencies of this component (ESP-IDF Component Manager).
+## json (cJSON) and mbedtls are part of ESP-IDF; esp_websocket_client comes
+## from esp-protocols and is pulled in via this file.
+dependencies:
+  espressif/esp_websocket_client: "^1.2.0"
+  idf: ">=5.0"

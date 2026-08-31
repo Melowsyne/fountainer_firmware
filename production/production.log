@@ -1,0 +1,4 @@
+# Fountainer production log — append-only (serienfertigung.md §27.8)
+# Format: <ISO-time> <serial> <PASS|FAIL> fw=<version> build=<build_version> <detail>
+2026-08-14T00:00:51 FNT-000001 PASS fw=4.34.0 build=1786653331024 checks=8/8
+2026-08-17T09:06:34 FNT-000002 PASS fw=4.37.0 build=1786952855382 checks=7/7

@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "defaults": {
+    "server_host": "192.168.1.12",
+    "server_port": 8443,
+    "server_path": "/ws",
+    "hw_revision": "HW1.0",
+    "secrets_root": "../DO_NOT_COMMIT/production_secrets"
+  },
+  "devices": [
+    {
+      "record_id": 0,
+      "serial": "FNT-000001",
+      "serial_u64": "0x00464E5400000001",
+      "device_id": "fnt-000001",
+      "hw_revision": "HW1.0",
+      "server": {
+        "host": "192.168.1.12",
+        "port": 8443
+      },
+      "security": {
+        "client_cert": "FNT-000001/client_v2.crt",
+        "client_key": "FNT-000001/client_v2.key",
+        "hmac_key": "FNT-000001/hmac.key",
+        "hmac_key_id": "1",
+        "bearer_token": "REDACTED-ROTATE-BEFORE-USE"
+      },
+      "manufacturing": {
+        "batch": "2026-08-T",
+        "status": "retired",
+        "created": "2026-08-13",
+        "firmware_version": "4.34.0",
+        "build_version": 1786653331024,
+        "note": "2026-08-17: hardware re-provisioned to FNT-000002/esp32-441bf6cef784 (device_id scheme of the existing device)"
+      }
+    },
+    {
+      "record_id": 1,
+      "serial": "FNT-000002",
+      "serial_u64": "0x00464E5400000002",
+      "device_id": "esp32-441bf6cef784",
+      "hw_revision": "HW1.0",
+      "server": {
+        "host": "192.168.1.12",
+        "port": 8443
+      },
+      "security": {
+        "client_cert": "FNT-000002/client.crt",
+        "client_key": "FNT-000002/client.key",
+        "hmac_key": "FNT-000002/hmac.key",
+        "hmac_key_id": "1",
+        "bearer_token": "REDACTED-ROTATE-BEFORE-USE"
+      },
+      "manufacturing": {
+        "batch": "2026-08-T",
+        "status": "passed",
+        "created": "2026-08-17",
+        "firmware_version": "4.37.0",
+        "build_version": 1786952855382
+      }
+    }
+  ]
+}

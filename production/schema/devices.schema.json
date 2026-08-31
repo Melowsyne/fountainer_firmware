@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Fountainer Production Database",
+  "description": "Schema for production/devices.json (schema_version 1). Documentation; the tools validate manually (no jsonschema package needed). Secrets live outside the repo under defaults.secrets_root.",
+  "type": "object",
+  "required": ["schema_version", "defaults", "devices"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "defaults": {
+      "type": "object",
+      "required": ["server_host", "server_port", "server_path", "hw_revision", "secrets_root"],
+      "properties": {
+        "server_host": { "type": "string" },
+        "server_port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "server_path": { "type": "string" },
+        "hw_revision": { "type": "string" },
+        "secrets_root": { "type": "string", "description": "relative to the firmware repo root, outside the repo" }
+      }
+    },
+    "devices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["record_id", "serial", "serial_u64", "device_id", "hw_revision", "server", "security", "manufacturing"],
+        "properties": {
+          "record_id": { "type": "integer", "minimum": 0 },
+          "serial": { "type": "string", "pattern": "^FNT-[0-9]{6}$", "description": "human-readable label; the primary device identity on the wire is serial_u64" },
+          "serial_u64": { "type": "string", "pattern": "^0x[0-9A-F]{16}$", "description": "Scheme 0x00464E5400000000 + N (\\0FNT + number)" },
+          "device_id": { "type": "string", "pattern": "^fnt-[0-9]{6}$" },
+          "hw_revision": { "type": "string" },
+          "server": {
+            "type": "object",
+            "required": ["host", "port"],
+            "properties": {
+              "host": { "type": "string" },
+              "port": { "type": "integer", "minimum": 1, "maximum": 65535 }
+            }
+          },
+          "security": {
+            "type": "object",
+            "required": ["client_cert", "client_key", "hmac_key", "hmac_key_id", "bearer_token"],
+            "properties": {
+              "client_cert": { "type": "string", "description": "path relative to defaults.secrets_root" },
+              "client_key": { "type": "string" },
+              "hmac_key": { "type": "string", "description": "file with 64 hex characters (32-byte key)" },
+              "hmac_key_id": { "type": "string" },
+              "bearer_token": { "type": "string" }
+            }
+          },
+          "manufacturing": {
+            "type": "object",
+            "required": ["batch", "status", "created"],
+            "properties": {
+              "batch": { "type": "string" },
+              "status": { "enum": ["allocated", "provisioned", "flashed", "tested", "passed", "failed", "shipped", "retired"] },
+              "created": { "type": "string", "format": "date" },
+              "firmware_version": { "type": "string" },
+              "build_version": { "type": "integer" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
