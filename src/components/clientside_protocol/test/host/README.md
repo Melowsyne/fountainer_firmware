@@ -8,7 +8,7 @@ built here.
 ## Recommended: test runner
 
 ```bash
-cd clientside_protocol
+cd src/components/clientside_protocol
 ./test/host/run_host_tests.sh
 ```
 
@@ -33,7 +33,7 @@ USE_SYSTEM=1 ./test/host/run_host_tests.sh
 ## Manual build (system dev packages only, ABI-consistent)
 
 ```bash
-cd clientside_protocol
+cd src/components/clientside_protocol
 
 # 1) golden auth vector (must reproduce AUTH-CONTRACT.md)
 gcc -Wall -Iinclude -I/usr/include/cjson \
@@ -54,7 +54,7 @@ Via Docker (without a host installation):
 ```bash
 docker run --rm -v "$PWD/../../..":/work --entrypoint bash debian:bookworm-slim -c '
   apt-get update -qq && apt-get install -y -qq build-essential libcjson-dev libmbedtls-dev
-  cd /work/esp32-s3_fountain_framework_v1/clientside_protocol
+  cd /work/src/components/clientside_protocol
   gcc -Iinclude -I/usr/include/cjson test/host/test_session.c \
       src/fp_session.c src/fp_envelope.c src/fp_auth.c src/fountain_msgs.c \
       -lcjson -lmbedcrypto -o /tmp/t && /tmp/t'

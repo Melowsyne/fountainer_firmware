@@ -20,7 +20,8 @@ through **callbacks**, not through hard dependencies.
 | `fp_task.{h,c}` | FreeRTOS task, timers, `fountain_proto_start()` | — (ESP-IDF) |
 
 The message layer is generated from `fountain_proto_schema/schema.py`
-(`python3 generate.py`) — do not edit by hand.
+(`python3 generate.py`; internal schema project, not part of this
+repository) — do not edit by hand.
 
 ## Integration (ESP-IDF)
 
@@ -34,8 +35,8 @@ The component manager pulls `esp_websocket_client` (see `idf_component.yml`).
 #include "fountain_proto.h"
 
 static void fill_snapshot(cJSON *dp, const cJSON *names, void *u) {
-    cJSON_AddNumberToObject(dp, "Fon_Current_Pressure", aktueller_druck());
-    cJSON_AddNumberToObject(dp, "Fon_Current_State", aktueller_state());
+    cJSON_AddNumberToObject(dp, "Fon_Current_Pressure", current_pressure());
+    cJSON_AddNumberToObject(dp, "Fon_Current_State", current_state());
     /* ... or generically from data_store: dp_report_full(dp) ... */
 }
 static void on_command(const cJSON *m, cJSON *res, void *u) {
@@ -69,7 +70,7 @@ Proactive alert: `fountain_proto_alert_send("dry_run", "fault", "Fon_Current_Pre
 ## Binding to the existing framework
 
 - **Datapoints:** fill `fill_snapshot` with `dp_report_full()`/`dp_read_into()` from
-  `datapoint_organisation/datapoints.h`; `on_dp_write` calls `dp_write_batch()`.
+  `src/components/datapoints/datapoints.h`; `on_dp_write` calls `dp_write_batch()`.
 - **Commands:** `on_command` maps onto `command_protocol_map()` + `command_execute()`.
 - **Wi-Fi:** bring it up through the existing `wlan_com`; then call `fountain_proto_start()`.
 

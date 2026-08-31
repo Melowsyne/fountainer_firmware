@@ -204,8 +204,7 @@ under a byte budget (shrunk to 4 KB while the link is POOR), and a normal
 `dp_read` keeps working during a pull. After a crash or watchdog reboot the
 server retrieves the **previous boot's log** with `log_read_prev` and
 acknowledges it with `log_ack_prev` — crash diagnosis without a USB cable.
-Local console output is only produced while a USB cable is actually
-attached.
+Local console output is meant for bench use over USB only.
 
 ```mermaid
 %%{init: {"flowchart": {"curve": "stepAfter", "rankSpacing": 55, "nodeSpacing": 40}}}%%
@@ -331,7 +330,7 @@ DP(   Log_Command,               U8,  RW, VOLATILE,   0, 0,       0.0f,   3.0f, 
 ```
 
 *Listing 1: Source excerpt from `src/components/datapoints/dp_list.def`
-(lines 82, 121, 164, 215) — four representative datapoint definitions: an
+(lines 84, 123, 166, 217) — four representative datapoint definitions: an
 analog measurement with on-change deadband, an NVS-persisted config value
 with validation bounds, a network setting, and a command point. One `DP(...)`
 line fully defines a datapoint; enum, RAM store, descriptor table and NVS
@@ -727,8 +726,8 @@ Deep dive: [DOKU/Robustness.md](DOKU/Robustness.md).
 
 Fresh checkout: `network.json` (Wi-Fi/server defaults) and
 `src/network/certs/` are git-ignored; `tools/ensure_network_json.py` creates
-a template on the first build. PlatformIO envs: `esp32s3` (USB) and
-`esp32s3_ota`. Pre-build scripts lint the datapoint catalog and embed
+a template on the first build. PlatformIO envs: `esp32s3` (USB),
+`esp32s3_ota` (OTA artifact) and `esp32s3_prod` (series production). Pre-build scripts lint the datapoint catalog and embed
 network/cert material and the build timestamp; the post-build script signs
 the image.
 
